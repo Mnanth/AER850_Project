@@ -12,13 +12,13 @@ import numpy as np
 import matplotlib.pyplot as plt 
 import seaborn as sns
 from sklearn.model_selection import train_test_split, StratifiedShuffleSplit 
-from sklearn.model_selection import cross_val_score 
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import mean_absolute_error
 from sklearn.svm import SVR
-
-
+from sklearn import tree
+from sklearn.datasets import load_iris
+from sklearn.model_selection import RandomizedSearchCV
 # Step 1: Data Processing
 df = pd.read_csv ('/Users/mithu/Documents/GitHub/AER850_Project/Project_1_Data.csv')
 
@@ -45,13 +45,13 @@ plt.show()
 corr_matrix = df.corr()
 abs_corr_matrix = corr_matrix.abs()
 plt.figure()
-sns.heatmap(abs_corr_matrix)
+sns.heatmap(abs_corr_matrix, annot=True)
 plt.title('Correlation Matrix Plot')
 
 print(corr_matrix)
 
 
-#Step 4 Classification Model Development/Engineering
+#Step 4: Classification Model Development/Engineering
 #Data Splitting 
 
 #Stratified Sampling
@@ -76,9 +76,35 @@ y_test = strat_df_test["Step"]
 #Linear Regression
 linear_reg = LinearRegression()
 param_grid_lr = {}
-grid_search_lr = GridSearchCV(linear_reg,param_grid_lr, scoring = 'neg_mean_absolute_error')
+grid_search_lr = GridSearchCV(linear_reg,param_grid_lr, scoring = 'neg_mean_absolute_error') #n_jobs = 1 and CV =5 as default
 grid_search_lr.fit(X_train,y_train)
 best_model_lr = grid_search_lr.best_estimator_
 print("Best Linear Regression Model:", best_model_lr)
 
-#Logistic
+#Support vector machine
+
+svr = SVR()
+param_grid_svr = {'kernel' : ['linear', 'rbf'],
+                  'C' : [0.1, 1, 10, 100],
+                  'gamma' : ['scale', 'auto']}
+grid_search_svr = GridSearchCV(svr,param_grid_svr, scoring = 'neg_mean_absolute_error') #n_jobs = 1 and CV =5 as default
+grid_search_svr.fit(X_train, y_train)
+best_model_svr = grid_search_svr.best_estimator_
+print ("Best SVM Model", best_model_svr)
+
+# Decision Tree Classifier
+iris = load_iris()
+X, y = iris.data, iris.target
+decision_tree = tree.DecisionTreeClassifier(random_state=42)
+param_grid_dt = {
+    'max_depth' :[None, 10, 20, 30],
+    'min_samples_split' : [2,5,10],
+    'min_samples_leaf' : [1,2,4]}
+random_search = RandomizedSearchCV(estimator = decision_tree, param_distributions = param_grid_dt, random_state=42)
+random_search.fit(X,y)
+print ("Best Parameters found:", random_search.best_estimator_)
+
+#Step 5:
+
+
+
