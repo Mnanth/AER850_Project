@@ -15,10 +15,12 @@ from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import mean_absolute_error
-from sklearn.svm import SVR
+from sklearn.svm import SVC
 from sklearn import tree
 from sklearn.datasets import load_iris
 from sklearn.model_selection import RandomizedSearchCV
+from sklearn.metrics import f1_score, precision_score, accuracy_score
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 # Step 1: Data Processing
 df = pd.read_csv ('/Users/mithu/Documents/GitHub/AER850_Project/Project_1_Data.csv')
 
@@ -83,7 +85,7 @@ print("Best Linear Regression Model:", best_model_lr)
 
 #Support vector machine
 
-svr = SVR()
+svr = SVC()
 param_grid_svr = {'kernel' : ['linear', 'rbf'],
                   'C' : [0.1, 1, 10, 100],
                   'gamma' : ['scale', 'auto']}
@@ -101,10 +103,45 @@ param_grid_dt = {
     'min_samples_split' : [2,5,10],
     'min_samples_leaf' : [1,2,4]}
 random_search = RandomizedSearchCV(estimator = decision_tree, param_distributions = param_grid_dt, random_state=42)
-random_search.fit(X,y)
-print ("Best Parameters found:", random_search.best_estimator_)
+random_search.fit(X_train,y_train)
+best_model_dt = random_search.best_estimator_
+print ("Best Parameters found:", best_model_dt)
 
-#Step 5:
+
+#Step 5:Model Performance Analysis
 
 
+#Support Vector Machine
+y_pred_svc = best_model_svr.predict(X_test)
+y_pred_binary_svc = (y_pred_svc>0.5).astype(int)
+F1_svc = f1_score(y_test,y_pred_svc, average ='weighted')
+Precision_svc = precision_score(y_test,y_pred_svc, average ='weighted')
+Accuracy_svc = accuracy_score(y_test,y_pred_svc)
+print(f"F1 Score Support Vector Machine: {F1_svc}")
+print(f"Precision Score Support Vector Machine: {Precision_svc}")
+print(f"Accuracy Score Support Vector Machine: {Accuracy_svc}")
+
+Cm = confusion_matrix(y_test,y_pred_svc)
+disp = ConfusionMatrixDisplay(confusion_matrix=Cm)
+disp.plot()
+plt.title('Confusion Matrix of Support Vector Machine')
+plt.show()
+
+#Decision Tree
+y_pred_dt = best_model_dt.predict(X_test)
+y_pred_binary_dt = (y_pred_dt>0.5).astype(int)
+F1_dt = f1_score(y_test,y_pred_dt, average ='weighted')
+Precision_dt = precision_score(y_test,y_pred_dt, average ='weighted')
+Accuracy_dt = accuracy_score(y_test,y_pred_dt)
+print(f"F1 Score Decision Tree{F1_dt}")
+print(f"Precision Score Decision Tree: {Precision_dt}")
+print(f"Accuracy Score Decision Tree: {Accuracy_dt}")
+
+Cm = confusion_matrix(y_test,y_pred_dt)
+disp = ConfusionMatrixDisplay(confusion_matrix=Cm)
+disp.plot()
+plt.title('Confusion Matrix of Decision Tree')
+plt.show()
+
+#Step 6: Stacked Model Performance Analysis
 
