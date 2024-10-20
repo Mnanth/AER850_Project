@@ -74,9 +74,11 @@ y_test = strat_df_test["Step"]
 
 
 #Linear Regression
-mymodel_1 = LinearRegression()
+linear_reg = LinearRegression()
 param_grid_lr = {}
 grid_search_lr = GridSearchCV(linear_reg,param_grid_lr, scoring = 'neg_mean_absolute_error')
-
+grid_search_lr.fit(X_train,y_train)
+best_model_lr = grid_search_lr.best_estimator_
+print("Best Linear Regression Model:", best_model_lr)
 
 #Logistic
