@@ -17,7 +17,6 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import mean_absolute_error
 from sklearn.svm import SVC
 from sklearn import tree
-from sklearn.datasets import load_iris
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.metrics import f1_score, precision_score, accuracy_score
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
@@ -95,8 +94,6 @@ best_model_svr = grid_search_svr.best_estimator_
 print ("Best SVM Model", best_model_svr)
 
 # Decision Tree Classifier
-iris = load_iris()
-X, y = iris.data, iris.target
 decision_tree = tree.DecisionTreeClassifier(random_state=42)
 param_grid_dt = {
     'max_depth' :[None, 10, 20, 30],
