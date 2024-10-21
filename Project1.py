@@ -96,9 +96,9 @@ print ("Best SVM Model", best_model_svr)
 # Decision Tree Classifier
 decision_tree = tree.DecisionTreeClassifier(random_state=42)
 param_grid_dt = {
-    'max_depth' :[None, 10, 20, 30],
-    'min_samples_split' : [2,5,10],
-    'min_samples_leaf' : [1,2,4]}
+    'max_depth' :[None, 120, 180, 220],
+    'min_samples_split' : [50,60,70],
+    'min_samples_leaf' : [7,8,9]}
 random_search = RandomizedSearchCV(estimator = decision_tree, param_distributions = param_grid_dt, random_state=42)
 random_search.fit(X_train,y_train)
 best_model_dt = random_search.best_estimator_
@@ -111,8 +111,8 @@ print ("Best Parameters found:", best_model_dt)
 #Support Vector Machine
 y_pred_svc = best_model_svr.predict(X_test)
 y_pred_binary_svc = (y_pred_svc>0.5).astype(int)
-F1_svc = f1_score(y_test,y_pred_svc, average ='weighted')
-Precision_svc = precision_score(y_test,y_pred_svc, average ='weighted')
+F1_svc = f1_score(y_test,y_pred_svc, average ='macro')
+Precision_svc = precision_score(y_test,y_pred_svc, average ='macro')
 Accuracy_svc = accuracy_score(y_test,y_pred_svc)
 print(f"F1 Score Support Vector Machine: {F1_svc}")
 print(f"Precision Score Support Vector Machine: {Precision_svc}")
@@ -128,7 +128,7 @@ plt.show()
 y_pred_dt = best_model_dt.predict(X_test)
 y_pred_binary_dt = (y_pred_dt>0.5).astype(int)
 F1_dt = f1_score(y_test,y_pred_dt, average ='weighted')
-Precision_dt = precision_score(y_test,y_pred_dt, average ='weighted')
+Precision_dt = precision_score(y_test,y_pred_dt, average ='micro')
 Accuracy_dt = accuracy_score(y_test,y_pred_dt)
 print(f"F1 Score Decision Tree{F1_dt}")
 print(f"Precision Score Decision Tree: {Precision_dt}")
